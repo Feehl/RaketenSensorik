@@ -70,9 +70,9 @@ public class CalculatePath : MonoBehaviour
         if(timer >= currentDelay)
         {
             running = false;
-            CalculateVelocity(i);
+            CalculateVelocity(i+1);
             CalculatePosition();
-            CalculateRotation(i + 1);
+            CalculateRotation(i);
             i += 2;
             currentDelay = ConvertDelayToSeconds(delays[i / 2] - delays[(i / 2) - 1]);
             timer = 0;
