@@ -18,6 +18,7 @@ public class CalculatePath : MonoBehaviour
     private bool running = true;
     private string[] stringVectors;
     private float currentDelay;
+    private bool finished = false;
 
     // Start is called before the first frame update
     void Start()
@@ -58,7 +59,12 @@ public class CalculatePath : MonoBehaviour
     //Simulate
     private void Update()
     {
-        if (i >= data.Count / 2) return;
+        if(finished) return;
+        if (i >= data.Count / 2)
+        {
+            finished = true;
+            Debug.Log("Final Height: " + rocketTransform.position.y.ToString());
+        }
         if(!running) return;
         timer += Time.deltaTime;
         if(timer >= currentDelay)
