@@ -9,6 +9,8 @@ public class CalculatePath : MonoBehaviour
     private string filepath;
     private List<Vector3> data = new List<Vector3>();
     private List<float> delays = new List<float>();
+
+    public string fileName = "TEST";
     public Transform rocketTransform;
     public Transform velocityObject;
     public bool applyGravity;
@@ -26,10 +28,11 @@ public class CalculatePath : MonoBehaviour
     void Start()
     {
         //Initialization
-        filepath = Application.dataPath + "/TEST.txt";
+        filepath = Application.dataPath + "/" + fileName + ".txt";
         ReadFile(filepath);
         rocketTransform.position = Vector3.zero;
         rocketTransform.rotation = Quaternion.identity;
+        velocityObject.position = Vector3.zero;
     }
 
     private void ReadFile(string path) 
@@ -77,12 +80,14 @@ public class CalculatePath : MonoBehaviour
             running = false;
             currentDelay = ConvertDelayToSeconds(delays[(i / 2)+1] - delays[(i / 2)]);
 
+            CalculateRotation(i+1);
             CalculateVelocity(i);
             CalculatePosition();
-            CalculateRotation(i+1);
             
             i += 2;
             timer = 0;
+            Debug.Log("rotation: " + velocityObject.localRotation.eulerAngles.ToString());
+            Debug.Log("forward: " + velocityObject.forward.ToString());
             Debug.Log(currentDelay.ToString() + " seconds passed");
             running = true;
         }
@@ -91,8 +96,8 @@ public class CalculatePath : MonoBehaviour
     private void CalculateRotation(int index)
     {
         Vector3 rotationAngle = data[index] * currentDelay * Mathf.Rad2Deg;
-        rocketTransform.Rotate(rotationAngle, Space.Self);
-        velocityObject.Rotate(rotationAngle, Space.Self);
+        rocketTransform.Rotate(rotationAngle);
+        velocityObject.Rotate(rotationAngle);
     }
 
     private void CalculateVelocity(int index)
@@ -100,7 +105,7 @@ public class CalculatePath : MonoBehaviour
         if(applyGravity) 
             ApplyGravity();
 
-        velocityObject.Translate(data[index] * currentDelay, Space.Self);
+        velocityObject.Translate(data[index] * currentDelay);
 
         if(lockHeight)
             velocityObject.position = new Vector3(velocityObject.position.x, 0f, velocityObject.position.z);
@@ -108,7 +113,7 @@ public class CalculatePath : MonoBehaviour
 
     private void CalculatePosition()
     {
-        rocketTransform.Translate(velocityObject.localPosition * currentDelay, Space.World);
+        rocketTransform.Translate(velocityObject.position * currentDelay, Space.World);
     }
 
     private void ApplyGravity()
@@ -120,4 +125,13 @@ public class CalculatePath : MonoBehaviour
     {
         return delayInMs / 1000f;
     }
+
+    //private Vector3 GetObjectVector(Vector3 vector, Transform ObjectSpace)
+    //{
+    //    Vector3 right = ObjectSpace.transform.right;
+    //    Vector3 up = ObjectSpace.transform.up;
+    //    Vector3 forward = ObjectSpace.transform.forward;
+
+    //    return (vector.x * right + vector.y * up + vector.z * forward);
+    //}
 }
